@@ -22,14 +22,51 @@ import std.random;
 
 
 /**
- * The type to return after tests are completed
+ * A report object that contains information about a test run
  *
- * The first element (bool) is whether all the tests passed or not, 
- * the second (int) is the number of tests supposed to be run,
- * the third (int) is the number of tests ran,
- * and the last (string) is the representation of the failed test
+ * See_Also:
+ *    forAll
 */
-alias Tuple!(bool, int, int, string) DamnStat;
+struct DamnStat(T...) {
+    /**
+     * Whether all the tests passed or not
+    */
+    bool   passed;
+
+    /**
+     * The number of tests scheduled to be ran
+    */
+    size_t testNum;
+
+    /**
+     * The actual number of tets ran. If all the tests passed then this value
+     * is equal to testNum, otherwise it denotes how many tests ran before the
+     * bug showed up.
+    */
+    size_t testNumRan;
+
+    /**
+     * A tuple representing the arguments fed to the tested function. It is not
+     * defined if the tests ran successfully
+    */
+    T      fail;
+
+    /**
+     * Property that produces a formatted string that represents the
+     * failing case. In case all the tests passed then this function returns
+     * null
+    */
+    @property string failStr() {
+        if(passed) {
+            return null;
+        }
+        string repr = "(";
+        foreach(value;fail) {
+            repr ~= to!string(value)~", ";
+        }
+        return repr[0..$-2]~")";
+    }
+}
 
 
 /**
@@ -354,14 +391,14 @@ T[] sample(T, const int N=10)(lazy T gen = generate!T) {
  *                        (generate!float, generate!float, generate!float);
  * -----------
 */
-DamnStat forAll
+DamnStat!(ParameterTypeTuple!property) forAll
 (alias property, const int n = NUM_TESTS, alias reporter = null, Generators...)
 (lazy Generators generators)
 if(isCallable!property && is(ReturnType!property == bool))
 {
-    ParameterTypeTuple!property args;
+    alias ParameterTypeTuple!property TP;
     int passedTests = 0;
-    DamnStat stats;
+    TP args;
 
     foreach(testNum; 0..n) {
         foreach(i, arg; generators) {
@@ -379,10 +416,13 @@ if(isCallable!property && is(ReturnType!property == bool))
         }
     }
 
-    stats[0] = (passedTests == n);
-    stats[1] = n;
-    stats[2] = passedTests;
-    stats[3] = stats[0] ? "" : to!string([args[]]);
+    bool hasPassed = passedTests == n;
+    auto stats = DamnStat!TP(hasPassed, n, passedTests);
 
+    // if the tests didn't pass then there is a failing case that is args
+    if(!hasPassed) {
+        stats.fail = args;
+    }
+    
     return stats;
 }

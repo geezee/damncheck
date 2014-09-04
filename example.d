@@ -39,8 +39,9 @@ float smallFloat() {
 }
 
 /* a function that formats the output of stat */
-void formatter(DamnStat stat) {
-    writef("%s\t%-6d %-6d %s\n", stat[0], stat[1], stat[2], stat[3]);
+void formatter(T...)(DamnStat!T stat) {
+    writefln("%s\t%d\t%d\t%s", stat.passed, stat.testNum, stat.testNumRan,
+             stat.failStr);
 }
 
 
@@ -105,30 +106,28 @@ void sortReporter(int[] list) {
     false   10000  7304   [[97, 258, 173]]
 */
 void main() {
-    DamnStat stats;
-
     writeln("Stats for idempotentSort running on an array of int (uses Array.sort)");
-    stats = forAll!idempotentSort(list!int);
-    formatter(stats);
+    auto statIdempotent = forAll!idempotentSort(list!int);
+    formatter(statIdempotent);
 
     writeln();
 
     writeln("Stats for expandingFloat running on 3 generated floats");
-    stats = forAll!(expandingFloat, 10000)
-                   (generate!float, generate!float, generate!float);
-    formatter(stats);
+    auto statExpand = forAll!(expandingFloat, 10000)
+                             (generate!float, generate!float, generate!float);
+    formatter(statExpand);
     
     writeln();
     
     writeln("Stats for expandingFloat running on 3 custom small generated floats");
-    stats = forAll!(expandingFloat, 5)
-                   (smallFloat, smallFloat, smallFloat);
-    formatter(stats);
+    auto statExpandSmall = forAll!(expandingFloat, 5)
+                                  (smallFloat, smallFloat, smallFloat);
+    formatter(statExpandSmall);
 
     writeln();
     writeln("Stats for custom sort running on a custom generated list of integers");
     writeln("of at most 1000 elements");
-    stats = forAll!(sortPropertyCheckers, 10000, sortReporter)
-                   (list!(int, 1000)(generate!int(-400,400)));
-    formatter(stats);
+    auto statSort = forAll!(sortPropertyCheckers, 10000, sortReporter)
+                           (list!(int, 1000)(generate!int(-400,400)));
+    formatter(statSort);
 }
