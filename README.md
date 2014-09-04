@@ -91,15 +91,15 @@ Start a property-based test.
 bool idempotentSort(int[] list) {
     return list.sort == list.sort.sort;
 }
-DamnStat stat1 = forAll!property(generate!(int[]));
-DamnStat stat2 = forAll!(property,1000)(generate!(ulong[]));
-if(stat1[0] && stat2[0]) {
-    writef("***** %d tests passed *****\n", stat1[1]);
+auto stat1 = forAll!property(generate!(int[]));
+auto stat2 = forAll!(property,1000)(generate!(ulong[]));
+if(stat1.passed && stat2.passed) {
+    writef("***** %d tests passed *****\n", stat1.testNum + stat2.testNum);
 } else {
     writef("***** %d/%d tests passed *****\nError at input:\n%s",
-           stat1[2], stat1[1], stat1[3]);
+           stat1.testNumRan, stat1.testNum, stat1.failStr);
     writef("***** %d/%d tests passed *****\nError at input:\n%s",
-           stat2[2], stat2[1], stat2[3]);
+           stat2.testNumRan, stat2.testNum, stat2.failStr);
 }
 ```
 ```d
@@ -113,6 +113,6 @@ void expandingFloatReporter(float a, float b, float c) {
     writefln("%.12f * %.12f + %.12f * %.12f = %.12f", a, b, a, c, a*b+a*c));
 }
 
-DamnStat stat = forAll!(expandingFloat, 100, expandingFloatShrinker)
+auto stat = forAll!(expandingFloat, 100, expandingFloatShrinker)
                        (generate!float, generate!float, generate!float);
 ```

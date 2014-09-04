@@ -21,15 +21,44 @@ MIT
 <b>Forked:</b><br>
 dashcheck - http://github.com/mcandre/dashcheck<br><br>
 
-<dl><dt><big><a name="DamnStat"></a>alias <u>DamnStat</u> = std.typecons.Tuple!(bool, int, int, string).Tuple;
+<dl><dt><big><a name="DamnStat"></a>struct <u>DamnStat</u>(T...);
 </big></dt>
-<dd>The type to return after tests are completed
+<dd>A report object that contains information about a test run
 <br><br>
-The first element (bool) is whether all the tests passed or not,
- the second (int) is the number of tests supposed to be run,
- the third (int) is the number of tests ran,
- and the last (string) is the representation of the failed test<br><br>
+<b>See Also:</b><br>
+forAll<br><br>
 
+<dl><dt><big><a name="passed"></a>bool <u>passed</u>;
+</big></dt>
+<dd>Whether all the tests <u>passed</u> or not<br><br>
+
+</dd>
+<dt><big><a name="testNum"></a>size_t <u>testNum</u>;
+</big></dt>
+<dd>The number of tests scheduled to be ran<br><br>
+
+</dd>
+<dt><big><a name="testNumRan"></a>size_t <u>testNumRan</u>;
+</big></dt>
+<dd>The actual number of tets ran. If all the tests passed then this value
+ is equal to testNum, otherwise it denotes how many tests ran before the
+ bug showed up.<br><br>
+
+</dd>
+<dt><big><a name="fail"></a>T <u>fail</u>;
+</big></dt>
+<dd>A tuple representing the arguments fed to the tested function. It is not
+ defined if the tests ran successfully<br><br>
+
+</dd>
+<dt><big><a name="failStr"></a>string <u>failStr</u>();
+</big></dt>
+<dd>Property that produces a formatted string that represents the
+ failing case. In case all the tests passed then this function returns
+ <b>null</b><br><br>
+
+</dd>
+</dl>
 </dd>
 <dt><big><a name="ARRAY_MAX_SIZE"></a>int <u>ARRAY_MAX_SIZE</u>;
 </big></dt>
@@ -271,7 +300,7 @@ generate
 <br><br>
 
 </dd>
-<dt><big><a name="forAll"></a>DamnStat <u>forAll</u>(alias property, const(int) n = NUM_TESTS, alias reporter = null, Generators...)(lazy Generators <i>generators</i>) if (isCallable!property &amp;&amp; is(ReturnType!property == bool));
+<dt><big><a name="forAll"></a>DamnStat!(ParameterTypeTuple!property) <u>forAll</u>(alias property, const(int) n = NUM_TESTS, alias reporter = null, Generators...)(lazy Generators <i>generators</i>) if (isCallable!property &amp;&amp; is(ReturnType!property == bool));
 </big></dt>
 <dd>Run a property based test
 <br><br>
