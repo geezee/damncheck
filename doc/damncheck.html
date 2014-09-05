@@ -21,7 +21,20 @@ MIT
 <b>Forked:</b><br>
 dashcheck - http://github.com/mcandre/dashcheck<br><br>
 
-<dl><dt><big><a name="DamnStat"></a>struct <u>DamnStat</u>(T...);
+<dl><dt><big><a name="setGeneratorSeed"></a>void <u>setGeneratorSeed</u>(uint <i>seed</i> = unpredictableSeed);
+</big></dt>
+<dd>Set the <i>seed</i> of the random number generator used by the generators. If no
+ <i>seed</i> was explicitly passed then it's unpredictable.
+<br><br>
+<b>Params:</b><br>
+<table><tr><td>uint <i>seed</i></td>
+<td>the <i>seed</i> of the random number generator (defaults to unpredictableSeed)</td></tr>
+</table><br>
+<b>See Also:</b><br>
+oneOf, list, dict, choose, generate<br><br>
+
+</dd>
+<dt><big><a name="DamnStat"></a>struct <u>DamnStat</u>(T...);
 </big></dt>
 <dd>A report object that contains information about a test run
 <br><br>
@@ -43,6 +56,11 @@ forAll<br><br>
 <dd>The actual number of tets ran. If all the tests passed then this value
  is equal to testNum, otherwise it denotes how many tests ran before the
  bug showed up.<br><br>
+
+</dd>
+<dt><big><a name="seed"></a>uint <u>seed</u>;
+</big></dt>
+<dd>The <u>seed</u> used by the random number generator<br><br>
 
 </dd>
 <dt><big><a name="fail"></a>T <u>fail</u>;

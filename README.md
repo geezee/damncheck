@@ -7,6 +7,7 @@ based on examples. The full documentation as rendered with Ddoc can be found
 [here](http://htmlpreview.github.io/?https://github.com/geezee/damncheck/blob/master/doc/damncheck.html)
 
 # Generators
+
 Generators are used to generate random values of a certain type. This is how
 you can use some of the generators in D.
 
@@ -28,6 +29,21 @@ Will return a random element form the array provided
 ```d
 choose([1, -1, 8, -8, 23]);
 choose(["D", "C", "Python"]);
+```
+
+## Generating Predictable Results
+
+To easily recreate a set of test values there is a function `setGeneratorSeed`
+that allows you to provide the seed to the random number generator.
+
+#### void setGeneratorSeed(uint seed = unpredictableSeed)
+```d
+setGeneratorSeed(); // the seed will be unpredictable
+// ... testing code here
+```
+```d
+setGeneratorSeed(100); // the seed is now 100, same values will be generated on each run
+// ... testing code here
 ```
 
 # Meta-generators

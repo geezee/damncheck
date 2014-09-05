@@ -40,8 +40,8 @@ float smallFloat() {
 
 /* a function that formats the output of stat */
 void formatter(T...)(DamnStat!T stat) {
-    writefln("%s\t%d\t%d\t%s", stat.passed, stat.testNum, stat.testNumRan,
-             stat.failStr);
+    writefln("%s\t%d\t%d\t%d\t%s", stat.passed, stat.testNum, stat.testNumRan,
+             stat.seed, stat.failStr);
 }
 
 
@@ -88,24 +88,26 @@ void sortReporter(int[] list) {
 
 
 /**
-    EXAMPLE OF A RUN:
-
-    Stats for idempotentSort running on an array of int (uses Array.sort)
-    true    100    100
-
-    Stats for expandingFloat running on 3 generated floats
-    true    10000  10000
-
-    Stats for expandingFloat running on 3 custom small generated floats
-    true    5      5
-
-    Stats for custom sort running on a custom generated list of integers
-    of at most 1000 elements
-    >> The sorted list is not in ascending order
-    At index 1 of the 'sorted' array: [258, 173]
-    false   10000  7304   [[97, 258, 173]]
+*   EXAMPLE OF A RUN:
+*
+*   Stats for idempotentSort running on an array of int (uses Array.sort)
+*   true    100     100     43
+*
+*   Stats for expandingFloat running on 3 generated floats
+*   true    10000   10000   43
+*   
+*   Stats for expandingFloat running on 3 custom small generated floats
+*   false   5       2       43      (-0.0114148, 0.766578, -0.873675)
+*   
+*   Stats for custom sort running on a custom generated list of integers
+*   of at most 1000 elements
+*   >> The sorted list is not in ascending order
+*   At index 1 of the 'sorted' array: [-70, -253]
+*   false   10000   1774    43      ([-281, -70, -253])
 */
 void main() {
+    setGeneratorSeed(43);
+
     writeln("Stats for idempotentSort running on an array of int (uses Array.sort)");
     auto statIdempotent = forAll!idempotentSort(list!int);
     formatter(statIdempotent);

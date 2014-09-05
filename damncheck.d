@@ -22,6 +22,29 @@ import std.random;
 
 
 /**
+ * Random number generator to be used by the generators
+*/
+private auto randGen = Random();
+private uint generatorSeed;
+
+
+/**
+ * Set the seed of the random number generator used by the generators. If no
+ * seed was explicitly passed then it's unpredictable.
+ *
+ * Params:
+ *   seed = the seed of the random number generator (defaults to unpredictableSeed)
+ *
+ * See_Also:
+ *   oneOf, list, dict, choose, generate
+*/
+void setGeneratorSeed(uint seed=unpredictableSeed) {
+    randGen.seed(seed);
+    generatorSeed = seed;
+}
+
+
+/**
  * A report object that contains information about a test run
  *
  * See_Also:
@@ -46,10 +69,16 @@ struct DamnStat(T...) {
     size_t testNumRan;
 
     /**
+     * The seed used by the random number generator
+    */
+    uint   seed;
+
+    /**
      * A tuple representing the arguments fed to the tested function. It is not
      * defined if the tests ran successfully
     */
     T      fail;
+
 
     /**
      * Property that produces a formatted string that represents the
@@ -106,7 +135,7 @@ enum int NUM_TESTS = 100;
 */
 auto oneOf(T...)(lazy T generators)
 if(generators.length >= 2) {
-    return [generators][uniform(0,$)];
+    return [generators][uniform(0,$,randGen)];
 }
 
 /**
@@ -160,7 +189,7 @@ U mapGenerate(alias mapper, T, U=T)(lazy T generator = generate!T) {
 */
 T[] list(T, size_t N=ARRAY_MAX_SIZE)(lazy T generator = generate!T) {
     Unqual!T[] array;
-    array.length = uniform!"[]"(0, N);
+    array.length = uniform!"[]"(0, N, randGen);
     foreach(i; 0..array.length) {
         array[i] = generator;
     }
@@ -200,7 +229,7 @@ T[] list(T, size_t N=ARRAY_MAX_SIZE)(lazy T generator = generate!T) {
 T[U] dict(T, U, size_t N=ARRAY_MAX_SIZE)
 (lazy T values = generate!T, lazy U keys = generate!U) {
     Unqual!T[Unqual!U] dict;
-    foreach(i; 0..uniform!"[]"(0, N)) {
+    foreach(i; 0..uniform!"[]"(0, N, randGen)) {
         dict[keys] = values;
     }
     return cast(T[U]) dict;
@@ -225,7 +254,7 @@ T[U] dict(T, U, size_t N=ARRAY_MAX_SIZE)
 */
 T choose(T)(T[] array) {
     if(array.length > 0) {
-        return array[uniform(0,$)];
+        return array[uniform(0,$,randGen)];
     } else {
         throw new Exception("Array too short");
     }
@@ -280,14 +309,14 @@ T generate(T)(T min = T.init, T max = T.init) {
     }
     else static if(is(T == float)) {
         return cast(float) uniform!"[]"(min is T.init ? T.min_normal : min,
-                                        max is T.init ? T.max : max);
+                                        max is T.init ? T.max : max, randGen);
     }
     else static if(is(T == bool)) {
-        return uniform(0, 2) == 0 ? false : true;
+        return uniform(0, 2, randGen) == 0 ? false : true;
     }
     else static if(__traits(hasMember, T, "min") && __traits(hasMember, T, "max")) {
         return uniform!"[]"(min is T.init ? T.min : min,
-                            max is T.max ? T.max : max);
+                            max is T.max ? T.max : max, randGen);
     }
     else {
         throw new Exception("No suitable generation function exists");
@@ -417,7 +446,7 @@ if(isCallable!property && is(ReturnType!property == bool))
     }
 
     bool hasPassed = passedTests == n;
-    auto stats = DamnStat!TP(hasPassed, n, passedTests);
+    auto stats = DamnStat!TP(hasPassed, n, passedTests, generatorSeed);
 
     // if the tests didn't pass then there is a failing case that is args
     if(!hasPassed) {
