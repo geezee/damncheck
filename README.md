@@ -1,4 +1,4 @@
-# damncheck v0.1
+# damncheck v0.2
 
 A property based testing library for D. Forked from
 [dashcheck](https://github.com/mcandre/dashcheck). It features a customizable
