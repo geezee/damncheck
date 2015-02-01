@@ -11,7 +11,7 @@ github.com/geezee
 
 <br><br>
 <b>Version:</b><br>
-0.1
+0.2
 
 <br><br>
 <b>License:</b><br>
@@ -41,35 +41,35 @@ oneOf, list, dict, choose, generate<br><br>
 <b>See Also:</b><br>
 forAll<br><br>
 
-<dl><dt><big><a name="passed"></a>bool <u>passed</u>;
+<dl><dt><big><a name="DamnStat.passed"></a>bool <u>passed</u>;
 </big></dt>
 <dd>Whether all the tests <u>passed</u> or not<br><br>
 
 </dd>
-<dt><big><a name="testNum"></a>size_t <u>testNum</u>;
+<dt><big><a name="DamnStat.testNum"></a>size_t <u>testNum</u>;
 </big></dt>
 <dd>The number of tests scheduled to be ran<br><br>
 
 </dd>
-<dt><big><a name="testNumRan"></a>size_t <u>testNumRan</u>;
+<dt><big><a name="DamnStat.testNumRan"></a>size_t <u>testNumRan</u>;
 </big></dt>
 <dd>The actual number of tets ran. If all the tests passed then this value
  is equal to testNum, otherwise it denotes how many tests ran before the
  bug showed up.<br><br>
 
 </dd>
-<dt><big><a name="seed"></a>uint <u>seed</u>;
+<dt><big><a name="DamnStat.seed"></a>uint <u>seed</u>;
 </big></dt>
 <dd>The <u>seed</u> used by the random number generator<br><br>
 
 </dd>
-<dt><big><a name="fail"></a>T <u>fail</u>;
+<dt><big><a name="DamnStat.fail"></a>T <u>fail</u>;
 </big></dt>
 <dd>A tuple representing the arguments fed to the tested function. It is not
  defined if the tests ran successfully<br><br>
 
 </dd>
-<dt><big><a name="failStr"></a>string <u>failStr</u>();
+<dt><big><a name="DamnStat.failStr"></a>@property string <u>failStr</u>();
 </big></dt>
 <dd>Property that produces a formatted string that represents the
  failing case. In case all the tests passed then this function returns
@@ -160,7 +160,7 @@ Exception when the generate!T generator is used if T is not a suitable
 
 <br><br>
 <b>See Also:</b><br>
-generate, sample
+fixedList, generate, sample
 
 <br><br>
 <b>Examples:</b><br>
@@ -168,6 +168,39 @@ generate, sample
 </font><u>list</u>!(<font color=blue>bool</font>,4); <font color=green>// generate a list that is at most 4 elements long, [true]
 </font><u>list</u>!<font color=blue>int</font>(0); <font color=green>// generate an array of all 0s, [0, 0, ..., 0]
 </font><u>list</u>!(<font color=blue>float</font>, 3)(generate!<font color=blue>float</font>(3, 5)); <font color=green>// [4.2852, 3.4924]
+</font></pre>
+<br><br>
+
+</dd>
+<dt><big><a name="fixedList"></a>T[] <u>fixedList</u>(T, size_t N)(lazy T <i>generator</i> = generate!T);
+</big></dt>
+<dd>A meta-generator that builds an array of length N whose elements are
+ generated from the provided generator.
+<br><br>
+<b>Params:</b><br>
+<table><tr><td>N</td>
+<td>the size of the array</td></tr>
+<tr><td>T generator</td>
+<td>the generator to use to build the array, the default
+                value is generate!T</td></tr>
+</table><br>
+<b>Returns:</b><br>
+An array contaning some elements generated from the provided generator
+
+<br><br>
+<b>Throws:</b><br>
+Exception when the generate!T generator is used if T is not a suitable
+    type for generate.
+
+<br><br>
+<b>See Also:</b><br>
+list, generate, sample
+
+<br><br>
+<b>Examples:</b><br>
+<pre class="d_code">list!(<font color=blue>int</font>, 5); <font color=green>// generate a list of integers of length 5, [4, 3, 2, 5, 6]
+</font>list!(<font color=blue>int</font>, 3)(0); <font color=green>// generate an array of length 3 all 0s, [0, 0, 0]
+</font>list!(<font color=blue>float</font>, 3)(generate!<font color=blue>float</font>(3, 5)); <font color=green>// [4.2852, 3.4924, 2.1035]
 </font></pre>
 <br><br>
 
