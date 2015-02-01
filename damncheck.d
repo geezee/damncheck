@@ -177,7 +177,7 @@ U mapGenerate(alias mapper, T, U=T)(lazy T generator = generate!T) {
  *    type for generate.
  *
  * See_Also:
- *    generate, sample
+ *    fixedList, generate, sample
  *
  * Examples:
  * -----------
@@ -190,6 +190,41 @@ U mapGenerate(alias mapper, T, U=T)(lazy T generator = generate!T) {
 T[] list(T, size_t N=ARRAY_MAX_SIZE)(lazy T generator = generate!T) {
     Unqual!T[] array;
     array.length = uniform!"[]"(0, N, randGen);
+    foreach(i; 0..array.length) {
+        array[i] = generator;
+    }
+    return cast(T[]) array;
+}
+
+/**
+ * A meta-generator that builds an array of length N whose elements are
+ * generated from the provided generator.
+ *
+ * Params:
+ *    N =         the size of the array
+ *    generator = the generator to use to build the array, the default 
+ *                value is generate!T
+ *
+ * Returns:
+ *    An array contaning some elements generated from the provided generator
+ *
+ * Throws:
+ *    Exception when the generate!T generator is used if T is not a suitable
+ *    type for generate.
+ *
+ * See_Also:
+ *    list, generate, sample
+ *
+ * Examples:
+ * -----------
+ * list!(int, 5); // generate a list of integers of length 5, [4, 3, 2, 5, 6]
+ * list!(int, 3)(0); // generate an array of length 3 all 0s, [0, 0, 0]
+ * list!(float, 3)(generate!float(3, 5)); // [4.2852, 3.4924, 2.1035]
+ * -----------
+ */
+T[] fixedList(T, size_t N)(lazy T generator = generate!T) {
+    Unqual!T[] array;
+    array.length = N;
     foreach(i; 0..array.length) {
         array[i] = generator;
     }
